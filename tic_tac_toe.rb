@@ -4,7 +4,7 @@
 class Board
   attr_reader :cells
 
-  WIN_COMBINATIONS = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]]
+  WIN_COMBINATIONS = [[1, 2, 3], [4, 5, 6],[7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]].freeze
 
   def initialize
     @cells = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -101,9 +101,11 @@ class Game
 
       if @board.check_for_winner
         puts "#{@current_player.name} wins! Congratulations!"
+        play_again?
         break
       elsif @board.full_board?
         puts "It's a draw"
+        play_again?
         break
       end
 
@@ -114,19 +116,39 @@ class Game
   private
 
   def make_move
-  puts "#{@current_player.name} choose one number where you want to place #{@current_player.symbol}"
-  user_cell_choice = gets.chomp.to_i
-
-  until @board.valid_move?(user_cell_choice)
-    puts 'Invalid choice. Please choose available space'
+    puts "#{@current_player.name} choose one number where you want to place #{@current_player.symbol}"
     user_cell_choice = gets.chomp.to_i
-  end
 
-  @board.update_board(user_cell_choice, @current_player.symbol)
+    until @board.valid_move?(user_cell_choice)
+      puts 'Invalid choice. Please choose available space'
+      user_cell_choice = gets.chomp.to_i
+    end
+
+    @board.update_board(user_cell_choice, @current_player.symbol)
   end
 
   def switch_players
     @current_player, @other_player = @other_player, @current_player
+  end
+
+  def play_again?
+    puts 'Do you want to play again? [Y/n]'
+    user_input = gets.chomp.downcase
+
+    case user_input
+    when 'y'
+      puts "Great! Let's begin."
+      @board = Board.new
+      @board.show_board
+      play
+      true
+    when 'n'
+      puts 'Alright, thanks for playing!'
+      false
+    else
+      puts "Invalid input. Please enter 'y' or 'n'."
+      play_again?
+    end
   end
 end
 
